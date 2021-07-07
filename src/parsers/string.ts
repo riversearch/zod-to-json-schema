@@ -4,6 +4,7 @@ export type JsonSchema7StringType = {
   type: 'string';
   minLength?: number;
   maxLength?: number;
+  pattern?: string;
 };
 
 export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
@@ -15,6 +16,7 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
     for (const check of def.checks) {
       switch (check.kind) {
         case 'regex':
+          res.pattern = check.regex.toString();
           // These are all regexp based (except URL which is "new Uri()" based) and zod does not seem to expose the source regexp right now.
           break;
         case 'min':

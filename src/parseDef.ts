@@ -55,6 +55,14 @@ export type JsonSchema7Type =
   | JsonSchema7RefType
   | JsonSchema7AnyType;
 
+function addMeta(schemaDef: any, properties: Record<string, unknown>) {
+  if (schemaDef.meta && typeof schemaDef.meta === 'object') {
+    return { ...properties, ...schemaDef.meta };
+  }
+
+  return properties;
+}
+
 export function parseDef<T>(
   schemaDef: any,
   path: string[],
@@ -62,14 +70,32 @@ export function parseDef<T>(
 ): JsonSchema7Type | undefined {
   if (visited) {
     const wasVisited = visited.find((x) => Object.is(x.def, schemaDef));
+
     if (wasVisited) {
-      return { $ref: `#/${wasVisited.path.join('/')}` };
+      return addMeta(schemaDef, { $ref: `#/${wasVisited.path.join('/')}` });
     } else {
       visited.push({ def: schemaDef, path });
     }
   }
 
+  const ret = parseSchema(schemaDef, path, visited);
+
+  // optional, if meta fields are defined on the schema, it will add them to the
+  // json schema
+  if (schemaDef.meta && typeof schemaDef.meta === 'object') {
+    return addMeta(schemaDef, ret);
+  }
+
+  return ret;
+}
+
+function parseSchema(
+  schemaDef: any,
+  path: string[],
+  visited: { def: ZodTypeDef; path: string[] }[]
+) {
   const def = schemaDef._def;
+
   switch (schemaDef.constructor.name) {
     case 'ZodString':
       return parseStringDef(def);
@@ -81,6 +107,12 @@ export function parseDef<T>(
       return parseBigintDef(def);
     case 'ZodBoolean':
       return parseBooleanDef();
+    case 'ZodDefault': {
+      return {
+        ...parseDef(def.innerType, path, visited),
+        default: def.defaultValue(),
+      };
+    }
     case 'ZodDate':
       return parseDateDef();
     case 'ZodUndefined':
