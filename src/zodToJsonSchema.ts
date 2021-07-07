@@ -1,10 +1,10 @@
-import { ZodSchema } from 'zod';
+import { AnnotatedSchema } from './lib/schema-utils';
 import { JsonSchema7Type, parseDef } from './parseDef';
 
 /**
  * @param schema The Zod schema to be converted
  */
-function zodToJsonSchema(schema: ZodSchema<any>):
+function zodToJsonSchema(schema: AnnotatedSchema<any>):
   | ({
       $schema: 'http://json-schema.org/draft-07/schema#';
     } & JsonSchema7Type)
@@ -14,14 +14,17 @@ function zodToJsonSchema(schema: ZodSchema<any>):
  * @param name The (optional) name of the schema. If a name is passed, the schema will be put in 'definitions' and referenced from the root.
  */
 function zodToJsonSchema<T extends string>(
-  schema: ZodSchema<any>,
+  schema: AnnotatedSchema<any>,
   name: T
 ): {
   $schema: 'http://json-schema.org/draft-07/schema#';
   $ref: string;
   definitions: Record<T, JsonSchema7Type>;
 };
-function zodToJsonSchema(schema: ZodSchema<any>, name?: string) {
+function zodToJsonSchema(
+  schema: AnnotatedSchema<any>,
+  name?: string
+): JsonSchema7Type {
   return name === undefined
     ? {
         $schema: 'http://json-schema.org/draft-07/schema#',
