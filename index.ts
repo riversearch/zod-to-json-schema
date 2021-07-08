@@ -1,3 +1,3 @@
-import { zodToJsonSchema } from './src/zodToJsonSchema';
+import { annotate, zodToJsonSchema } from './src/zodToJsonSchema';
 export default zodToJsonSchema;
-export { zodToJsonSchema };
+export { annotate, zodToJsonSchema };
