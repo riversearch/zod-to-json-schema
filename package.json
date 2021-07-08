@@ -2,11 +2,11 @@
   "name": "@river/zod-to-json-schema",
   "version": "3.1.2",
   "description": "Converts Zod schemas to Json Schemas",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "dev": "jest --watch",
-    "build": "rimraf dist && tsc && node copyPackageFiles.js",
+    "build": "rimraf dist && tsc",
     "dryrun": "jest && npm run build && cd dist && npm pub --dry-run"
   },
   "keywords": [
