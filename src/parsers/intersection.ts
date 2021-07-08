@@ -5,14 +5,15 @@ import { parseObjectDef } from './object';
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs: boolean
 ): JsonSchema7Type | undefined {
   const rightDef = def.right._def;
   if (rightDef.t === ZodParsedType.object) {
-    const right = parseObjectDef(rightDef, path, visited);
+    const right = parseObjectDef(rightDef, path, visited, useRefs);
     const leftDef = def.left._def;
     if (leftDef.t === ZodParsedType.object) {
-      const left = parseObjectDef(leftDef, path, visited);
+      const left = parseObjectDef(leftDef, path, visited, useRefs);
       return {
         type: 'object',
         properties: { ...left.properties, ...right.properties },
@@ -26,5 +27,5 @@ export function parseIntersectionDef(
     }
     return right;
   }
-  return parseDef(rightDef, path, visited);
+  return parseDef(rightDef, path, visited, useRefs);
 }

@@ -11,12 +11,13 @@ export type JsonSchema7ArrayType = {
 export function parseArrayDef(
   def: ZodArrayDef | ZodNonEmptyArrayDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs: boolean
 ) {
   {
     const res: JsonSchema7ArrayType = {
       type: 'array',
-      items: parseDef(def.type, [...path, 'array'], visited),
+      items: parseDef(def.type, [...path, 'array'], visited, useRefs),
     };
 
     if (def.minLength) {
@@ -33,12 +34,13 @@ export function parseArrayDef(
 export function parseNonEmptyArrayDef(
   def: ZodArrayDef | ZodNonEmptyArrayDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs: boolean
 ) {
   {
     const res: JsonSchema7ArrayType = {
       type: 'array',
-      items: parseDef(def.type, [...path, 'items'], visited),
+      items: parseDef(def.type, [...path, 'items'], visited, useRefs),
       minItems: 1,
     };
 

@@ -32,7 +32,8 @@ export type JsonSchema7AnyOfType = {
 export function parseUnionDef(
   def: ZodUnionDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs: boolean
 ):
   | JsonSchema7PrimitiveUnionType
   | JsonSchema7AnyOfType
@@ -41,7 +42,7 @@ export function parseUnionDef(
   const options = def.options.filter((x) => x.constructor.name !== 'undefined');
   //
   if (options.length === 1) {
-    return parseDef(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property
+    return parseDef(options[0]._def, path, visited, useRefs); // likely union with undefined, and thus probably optional object property
   }
 
   // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
@@ -102,7 +103,7 @@ export function parseUnionDef(
     // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
 
     anyOf: options.map((x, i) =>
-      parseDef(x, [...path, 'anyOf', i.toString()], visited)
+      parseDef(x, [...path, 'anyOf', i.toString()], visited, useRefs)
     ),
   };
 }

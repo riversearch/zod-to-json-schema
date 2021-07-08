@@ -66,9 +66,10 @@ function addMeta(schemaDef: any, properties: Record<string, unknown>) {
 export function parseDef<T>(
   schemaDef: any,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs = true
 ): JsonSchema7Type | undefined {
-  if (visited) {
+  if (useRefs && visited) {
     const wasVisited = visited.find((x) => Object.is(x.def, schemaDef));
 
     if (wasVisited) {
@@ -78,7 +79,7 @@ export function parseDef<T>(
     }
   }
 
-  const ret = parseSchema(schemaDef, path, visited);
+  const ret = parseSchema(schemaDef, path, visited, useRefs);
 
   // optional, if meta fields are defined on the schema, it will add them to the
   // json schema
@@ -92,7 +93,8 @@ export function parseDef<T>(
 function parseSchema(
   schemaDef: any,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  useRefs = true
 ) {
   const def = schemaDef._def;
 
@@ -102,14 +104,14 @@ function parseSchema(
     case 'ZodNumber':
       return parseNumberDef(def);
     case 'ZodObject':
-      return parseObjectDef(def, path, visited);
+      return parseObjectDef(def, path, visited, useRefs);
     case 'ZodBigInt':
       return parseBigintDef(def);
     case 'ZodBoolean':
       return parseBooleanDef();
     case 'ZodDefault': {
       return {
-        ...parseDef(def.innerType, path, visited),
+        ...parseDef(def.innerType, path, visited, useRefs),
         default: def.defaultValue(),
       };
     }
@@ -120,17 +122,17 @@ function parseSchema(
     case 'ZodNull':
       return parseNullDef();
     case 'ZodArray':
-      return parseArrayDef(def, path, visited);
+      return parseArrayDef(def, path, visited, useRefs);
     case 'ZodNonEmptyArray':
-      return parseNonEmptyArrayDef(def, path, visited);
+      return parseNonEmptyArrayDef(def, path, visited, useRefs);
     case 'ZodUnion':
-      return parseUnionDef(def, path, visited);
+      return parseUnionDef(def, path, visited, useRefs);
     case 'ZodIntersection':
-      return parseIntersectionDef(def, path, visited);
+      return parseIntersectionDef(def, path, visited, useRefs);
     case 'ZodTuple':
-      return parseTupleDef(def, path, visited);
+      return parseTupleDef(def, path, visited, useRefs);
     case 'ZodRecord':
-      return parseRecordDef(def, path, visited);
+      return parseRecordDef(def, path, visited, useRefs);
     case 'ZodLiteral':
       return parseLiteralDef(def);
     case 'ZodEnum':
@@ -138,11 +140,11 @@ function parseSchema(
     case 'ZodNativeEnum':
       return parseNativeEnumDef(def);
     case 'ZodNullable':
-      return parseNullable(def);
+      return parseNullable(def, useRefs);
     case 'ZodOptional':
-      return parseDef(def.innerType, path, visited);
+      return parseDef(def.innerType, path, visited, useRefs);
     case 'ZodEffects':
-      const _def: any = parseDef(def.schema, path, visited);
+      const _def: any = parseDef(def.schema, path, visited, useRefs);
       return {
         ..._def,
         type: (_def.type || '') + ' (refinements)',
