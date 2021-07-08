@@ -1,4 +1,4 @@
-import { AnnotatedSchema } from './lib/schema-utils';
+import { AnnotatedSchema, annotate } from './lib/schema-utils';
 import { JsonSchema7Type, parseDef } from './parseDef';
 
 export type ZodToJsonSchemaOptions = { name?: string; useRefs?: boolean };
@@ -47,4 +47,4 @@ function zodToJsonSchema(
       };
 }
 
-export { zodToJsonSchema };
+export { annotate, zodToJsonSchema };
