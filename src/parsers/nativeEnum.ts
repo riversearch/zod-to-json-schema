@@ -14,6 +14,7 @@ export function parseNativeEnumDef(
   const actualValues = Object.values(def.values).filter(
     (_, i) => i >= numberValues.length
   );
+
   return {
     type:
       numberValues.length === 0

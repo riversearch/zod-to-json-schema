@@ -2,8 +2,10 @@ import { ZodOptionalDef } from 'zod';
 import { parseDef } from '../parseDef';
 
 export function parseNullable(def: ZodOptionalDef): { type: string[] } {
-  const type = parseDef(def.innerType, [], []);
+  const { type, ...rest } = parseDef(def.innerType, [], []) as any;
+
   return {
-    type: [(type as any).type, 'null'],
+    type: [type, 'null'],
+    ...rest,
   };
 }
