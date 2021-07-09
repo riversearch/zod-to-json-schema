@@ -1,4 +1,4 @@
-import { ZodObjectDef, ZodTypeDef } from 'zod';
+import { ZodNever, ZodObjectDef, ZodTypeDef } from 'zod';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7ObjectType = {
@@ -27,7 +27,9 @@ export function parseObjectDef(
       }))
       .filter(({ value }) => value !== undefined)
       .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
-    additionalProperties: false,
+    // @TODO(calvinl): make this smarter, we can actually specify the types of
+    // additional properties it allows
+    additionalProperties: !(def.catchall instanceof ZodNever),
   };
   const required = Object.entries(def.shape())
     .filter(([, value]) => value !== undefined && value._def !== undefined)
