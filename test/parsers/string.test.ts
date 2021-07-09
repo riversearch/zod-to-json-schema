@@ -28,4 +28,22 @@ describe('String validations', () => {
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
+
+  it('adds the format property with an email check', () => {
+    const parsedSchema = parseStringDef(z.string().email()._def);
+    const jsonSchema: JSONSchema7Type = {
+      format: 'email',
+      type: 'string',
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it('adds the format property with a url check', () => {
+    const parsedSchema = parseStringDef(z.string().url()._def);
+    const jsonSchema: JSONSchema7Type = {
+      format: 'uri',
+      type: 'string',
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
 });
