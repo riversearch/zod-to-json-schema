@@ -25,4 +25,16 @@ describe('With meta properties', () => {
       type: 'object',
     });
   });
+
+  it('can specify a custom format', () => {
+    const schema = annotate(
+      { format: 'custom-date-time', type: 'object' },
+      z.date()
+    );
+
+    expect(zodToJsonSchema(schema)).toMatchObject({
+      format: 'custom-date-time',
+      type: 'object',
+    });
+  });
 });

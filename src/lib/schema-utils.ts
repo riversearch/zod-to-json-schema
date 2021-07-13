@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-type ZodMeta = { description?: string; name?: string };
+type ZodMeta = {
+  description?: string;
+  format?: string;
+  name?: string;
+  type?: string;
+};
+
 type AnyObject = z.ZodTypeAny;
 export type AnnotatedSchema<T extends z.ZodTypeAny = z.ZodTypeAny> = T &
   ZodMeta;
