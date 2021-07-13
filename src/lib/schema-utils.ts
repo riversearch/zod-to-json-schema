@@ -4,7 +4,7 @@ type ZodMeta = {
   description?: string;
   format?: string;
   name?: string;
-  type?: string;
+  type?: string | string[];
 };
 
 type AnyObject = z.ZodTypeAny;
